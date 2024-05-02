@@ -11,7 +11,7 @@ class YML_For_Yandex_Education extends YMLCatalogGenerator{
       
         $learning_posts = get_posts(array(
             'post_type' => 'learning',
-            'posts_per_page' => -1,
+            'posts_per_page' => 1,
             'post_status' => 'publish' 
         ));
 
@@ -33,6 +33,7 @@ class YML_For_Yandex_Education extends YMLCatalogGenerator{
         //$this->addWebinarOffers($webinar_posts);
 
         // Сохраняем XML-файл
-          $this->saveXMLFile('courses11.xml');
+	    $this->saveXMLFile('feed.xml');
+          $this->saveXMLFile('feed.yml');
     }
 }

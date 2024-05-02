@@ -13,12 +13,13 @@ class YMLCatalogGenerator {
 			$this->xml = new SimpleXMLElement( '<?xml version="1.0" encoding="UTF-8"?><yml_catalog/>' );
 			$this->xml->addAttribute( 'date', date( 'Y-m-d H:i' ) );
 
-		//	$this->shop = $this->xml->addChild( 'shop' );
-		//	$this->setupShopInfo();
-		//	$this->currencies = $this->shop->addChild( 'currencies' );
-		//	$this->setupCurrencies();
-		//	$this->sets = $this->shop->addChild( 'sets' );
-		//	$this->setupSets();
+			$this->shop = $this->xml->addChild( 'shop' );
+			/* $this->setupShopInfo();
+			$this->currencies = $this->shop->addChild( 'currencies' );
+			$this->setupCurrencies();
+			$this->sets = $this->shop->addChild( 'sets' );
+			$this->setupSets();
+			*/
 
 			$this->offers = $this->shop->addChild( 'offers' );
 		} catch ( Exception $e ) {
