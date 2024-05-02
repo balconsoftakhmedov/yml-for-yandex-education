@@ -12,15 +12,12 @@ class YMLCatalogGenerator {
 
 			$this->xml = new SimpleXMLElement( '<?xml version="1.0" encoding="UTF-8"?><yml_catalog/>' );
 			$this->xml->addAttribute( 'date', date( 'Y-m-d H:i' ) );
-
 			$this->shop = $this->xml->addChild( 'shop' );
-			/* $this->setupShopInfo();
+			$this->setupShopInfo();
 			$this->currencies = $this->shop->addChild( 'currencies' );
 			$this->setupCurrencies();
 			$this->sets = $this->shop->addChild( 'sets' );
 			$this->setupSets();
-			*/
-
 			$this->offers = $this->shop->addChild( 'offers' );
 		} catch ( Exception $e ) {
 
@@ -29,13 +26,37 @@ class YMLCatalogGenerator {
 	}
 
 	private function setupShopInfo() {
-		$this->shop->addChild( 'name', 'Школа Сэмпл.Курсы' );
-		$this->shop->addChild( 'company', 'ООО Школа Сэмпл.Курсы' );
-		$this->shop->addChild( 'url', 'https://courses.sample.s3.yandex.net' );
-		$this->shop->addChild( 'email', 'support-courses@courses.sample.s3.yandex.net' );
-		$this->shop->addChild( 'picture', 'https://avatars.mds.yandex.net/get-pdb/5679262/13d16a0c-27e9-4095-8f55-accdc2d7c8f0/s1200' );
-		$this->shop->addChild( 'description', 'Онлайн школа по программированию и изучения языков' );
+
+		$site_name_def    = get_bloginfo( 'name' );
+		$admin_email  = get_option( 'admin_email' );
+		$site_url     = get_site_url();
+		$site_company = 'АНО ДПО «Академия развития инновационных технологий»';
+		$default_picture = $site_url . '/wp-content/plugins/yml-for-yandex-education/images/screenshot.png';
+
+		$site_description   = get_bloginfo( 'description' );
+		$custom_description = '';
+
+		$wpseo_settings     = get_option( 'wpseo_titles' );
+		if ( $wpseo_settings ) {
+			$site_description = $wpseo_settings['metadesc-home-wpseo'] ?? '';
+			$site_company     = $wpseo_settings['company_name'] ?? '';
+			$custom_picture   = $wpseo_settings['open_graph_frontpage_image'] ?? '';
+			$site_name        = $wpseo_settings['open_graph_frontpage_title'] ?? '';
+		}
+
+		$site_name = ! empty( $site_name ) ? $site_name : $site_name_def;
+		$description        = ! empty( $custom_description ) ? $custom_description : $site_description;
+		$picture         = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
+
+		// Add shop information to XML
+		$this->shop->addChild( 'name', $site_name );
+		$this->shop->addChild( 'company', $site_company );
+		$this->shop->addChild( 'url', $site_url );
+		$this->shop->addChild( 'email', $admin_email );
+		$this->shop->addChild( 'picture', $picture );
+		$this->shop->addChild( 'description', $description );
 	}
+
 
 	private function setupCurrencies() {
 		$currency = $this->currencies->addChild( 'currency' );
