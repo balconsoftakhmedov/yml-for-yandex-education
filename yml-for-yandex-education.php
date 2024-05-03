@@ -27,4 +27,4 @@ function yml_for_yandex_education_init() {
     $plugin = new YML_For_Yandex_Education();
     $plugin->run();
 }
-add_action( 'plugins_loaded', 'yml_for_yandex_education_init' );
+add_action( 'init', 'yml_for_yandex_education_init' );

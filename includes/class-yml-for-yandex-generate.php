@@ -27,15 +27,13 @@ class YMLCatalogGenerator {
 
 	private function setupShopInfo() {
 
-		$site_name_def    = get_bloginfo( 'name' );
-		$admin_email  = get_option( 'admin_email' );
-		$site_url     = get_site_url();
-		$site_company = 'АНО ДПО «Академия развития инновационных технологий»';
-		$default_picture = $site_url . '/wp-content/plugins/yml-for-yandex-education/images/screenshot.png';
-
+		$site_name_def      = get_bloginfo( 'name' );
+		$admin_email        = get_option( 'admin_email' );
+		$site_url           = get_site_url();
+		$site_company       = 'АНО ДПО «Академия развития инновационных технологий»';
+		$default_picture    = $site_url . '/wp-content/plugins/yml-for-yandex-education/images/screenshot.png';
 		$site_description   = get_bloginfo( 'description' );
 		$custom_description = '';
-
 		$wpseo_settings     = get_option( 'wpseo_titles' );
 		if ( $wpseo_settings ) {
 			$site_description = $wpseo_settings['metadesc-home-wpseo'] ?? '';
@@ -43,11 +41,9 @@ class YMLCatalogGenerator {
 			$custom_picture   = $wpseo_settings['open_graph_frontpage_image'] ?? '';
 			$site_name        = $wpseo_settings['open_graph_frontpage_title'] ?? '';
 		}
-
-		$site_name = ! empty( $site_name ) ? $site_name : $site_name_def;
-		$description        = ! empty( $custom_description ) ? $custom_description : $site_description;
-		$picture         = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
-
+		$site_name   = ! empty( $site_name ) ? $site_name : $site_name_def;
+		$description = ! empty( $custom_description ) ? $custom_description : $site_description;
+		$picture     = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
 		// Add shop information to XML
 		$this->shop->addChild( 'name', $site_name );
 		$this->shop->addChild( 'company', $site_company );
@@ -85,7 +81,62 @@ class YMLCatalogGenerator {
 			$offer->addAttribute( 'id', $post->ID );
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
+			$category_id = $this->addLearningWays( $post->ID );
+			$offer->addChild( 'categoryId', $category_id );
+			$desc = get_field( 'descr', $post->ID, false );
+			$desc = $this->get_desc( $desc );
+			$offer->addChild( 'description', $desc );
+			$params = [
+				'hours'        => 'Время обучения',
+				'format'       => 'Форма обучения',
+				'documents'    => 'Получаемые документы',
+				'requirements' => 'Условия поступления',
+				'for_who'      => 'Для кого это обучение?'
+			];
+			foreach ( $params as $key => $value ) {
+				if ( 'hours' == $key ) {
+					$v = get_field( $key, $post->ID, false );
+					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
+				} else {
+					$v = get_field( $key, $post->ID, false );
+					$this->addParam( $offer, $value, $this->get_desc( $v ) );
+				}
+			}
 		}
+	}
+
+	private function addParam( $parent, $name, $value, $unit = '' ) {
+		$param = $parent->addChild( 'param', $value );
+		$param->addAttribute( 'name', $name );
+		if ( $unit != '' ) {
+			$param->addAttribute( 'unit', $unit );
+		}
+	}
+
+	private function addLearningWays( $post_id ) {
+		$terms = get_the_terms( $post_id, 'learning_way' );
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				return $term->term_id;
+			}
+		}
+	}
+
+	private function get_post_category_id( $post_id ) {
+		$categories = get_the_category( $post_id );
+		if ( ! empty( $categories ) ) {
+			return $categories[0]->term_id;
+		}
+
+		return '';
+	}
+
+	public function get_desc( $desc ) {
+
+		$desc_stripped = strip_tags( $desc );
+		$desc_stripped = wp_trim_words( $desc_stripped, 40, '...' );
+
+		return $desc_stripped;
 	}
 
 	public function saveXMLFile( $filename ) {

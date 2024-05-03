@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../advanced-custom-fields/.idea/advanced-custom-fields.iml" filepath="$PROJECT_DIR$/../advanced-custom-fields/.idea/advanced-custom-fields.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../themes/arit/.idea/arit.iml" filepath="$PROJECT_DIR$/../../themes/arit/.idea/arit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../wordpress-seo/.idea/wordpress-seo.iml" filepath="$PROJECT_DIR$/../wordpress-seo/.idea/wordpress-seo.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/yml-for-yandex-education.iml" filepath="$PROJECT_DIR$/.idea/yml-for-yandex-education.iml" />
     </modules>
   </component>
