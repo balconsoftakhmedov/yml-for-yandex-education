@@ -17,7 +17,7 @@ class YMLCatalogGenerator {
 			$this->currencies = $this->shop->addChild( 'currencies' );
 			$this->setupCurrencies();
 			$this->sets = $this->shop->addChild( 'sets' );
-			$this->setupSets();
+			/$this->setupSets();
 			$this->offers = $this->shop->addChild( 'offers' );
 		} catch ( Exception $e ) {
 
@@ -61,19 +61,34 @@ class YMLCatalogGenerator {
 	}
 
 	private function setupSets() {
-		$set1 = $this->sets->addChild( 'set' );
-		$set1->addAttribute( 'id', 's1' );
-		$set1->addChild( 'name', 'Курсы' );
-		$set1->addChild( 'url', 'https://courses.sample.s3.yandex.net/list/Courses' );
-		$set2 = $this->sets->addChild( 'set' );
-		$set2->addAttribute( 'id', 's2' );
-		$set2->addChild( 'name', 'Вебинары' );
-		$set2->addChild( 'url', 'https://courses.sample.s3.yandex.net/list/Webinars' );
-		$set3 = $this->sets->addChild( 'set' );
-		$set3->addAttribute( 'id', 's3' );
-		$set3->addChild( 'name', 'Семинары' );
-		$set3->addChild( 'url', 'https://courses.sample.s3.yandex.net/list/Seminars' );
+
+		$query = new WP_Query( array(
+			'post_type' => 'learning',
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'learning_way',
+					'field'    => 'slug'
+				),
+			),
+			'paged'     => 2,
+		) );
+
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id   = get_the_ID();
+				$post_name = get_the_title();
+				$post_url  = get_permalink();
+				$set = $this->sets->addChild( 'set' );
+				$set->addAttribute( 'id', $post_id );
+				$set->addChild( 'name', $post_name );
+				$set->addChild( 'url', $post_url );
+			}
+		}
+
+		wp_reset_postdata();
 	}
+
 
 	public function addLearningOffers( $learning_posts ) {
 		foreach ( $learning_posts as $post ) {
@@ -148,7 +163,3 @@ class YMLCatalogGenerator {
 		}
 	}
 }
-
-
-
-
