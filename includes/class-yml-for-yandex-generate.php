@@ -17,7 +17,7 @@ class YMLCatalogGenerator {
 			$this->currencies = $this->shop->addChild( 'currencies' );
 			$this->setupCurrencies();
 			$this->sets = $this->shop->addChild( 'sets' );
-			/$this->setupSets();
+			$this->setupSets('learning_way');
 			$this->offers = $this->shop->addChild( 'offers' );
 		} catch ( Exception $e ) {
 
@@ -60,32 +60,33 @@ class YMLCatalogGenerator {
 		$currency->addAttribute( 'rate', '1' );
 	}
 
-	private function setupSets() {
+	public function getAllTerms( $taxonomy ) {
 
-		$query = new WP_Query( array(
-			'post_type' => 'learning',
-			'tax_query' => array(
-				array(
-					'taxonomy' => 'learning_way',
-					'field'    => 'slug'
-				),
-			),
-			'paged'     => 2,
+		$terms = get_terms( array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false,
 		) );
+		if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+			return $terms;
+		}
 
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$post_id   = get_the_ID();
-				$post_name = get_the_title();
-				$post_url  = get_permalink();
-				$set = $this->sets->addChild( 'set' );
+		return [];
+	}
+
+	private function setupSets($taxonomy) {
+
+		$taxonomies = $this->getAllTerms( $taxonomy );
+		if ( $taxonomies ) {
+			foreach($taxonomies as $term) {
+				$post_id   = $term->term_id;
+				$post_name = $term->name;
+				$post_url  =   get_term_link( $term );
+				$set       = $this->sets->addChild( 'set' );
 				$set->addAttribute( 'id', $post_id );
 				$set->addChild( 'name', $post_name );
 				$set->addChild( 'url', $post_url );
 			}
 		}
-
 		wp_reset_postdata();
 	}
 
@@ -98,6 +99,8 @@ class YMLCatalogGenerator {
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
 			$category_id = $this->addLearningWays( $post->ID );
 			$offer->addChild( 'categoryId', $category_id );
+			$setIds = $this->addLearningWays( $post->ID,'learning_way', 'all' );
+			$offer->addChild( 'set-ids', $setIds );
 			$desc = get_field( 'descr', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
@@ -128,12 +131,18 @@ class YMLCatalogGenerator {
 		}
 	}
 
-	private function addLearningWays( $post_id ) {
-		$terms = get_the_terms( $post_id, 'learning_way' );
+	private function addLearningWays( $post_id, $taxonomy = 'learning_way', $key = 0 ) {
+		$terms = get_the_terms( $post_id, $taxonomy );
+		$terms_all = [];
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				return $term->term_id;
+				if ($key == 0) {
+					return $term->term_id;
+				}else{
+					$terms_all[]=$term->term_id;
+				}
 			}
+			return implode(',', $terms_all);
 		}
 	}
 
