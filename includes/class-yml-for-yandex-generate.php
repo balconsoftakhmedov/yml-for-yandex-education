@@ -158,6 +158,7 @@ class YMLCatalogGenerator {
 	public function get_desc( $desc ) {
 
 		$desc_stripped = strip_tags( $desc );
+		$desc_stripped = str_replace('&nbsp;', '', $desc_stripped);
 		$desc_stripped = wp_trim_words( $desc_stripped, 40, '...' );
 
 		return $desc_stripped;
