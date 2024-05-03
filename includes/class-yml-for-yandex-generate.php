@@ -103,17 +103,17 @@ class YMLCatalogGenerator {
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
 			$params = [
-				'meetup_date'        => 'Дата проведения',
-				'time' => 'Время',
+				'meetup_date'     => 'Дата проведения',
+				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
-				'meetup_address' => 'Где будет проходить'
+				'meetup_address'  => 'Где будет проходить'
 			];
 			foreach ( $params as $key => $value ) {
 				if ( 'meetup_date' == $key ) {
-					$v = get_field( $key, $post->ID, false );
-					$v = $this->get_desc( $v );
+					$v         = get_field( $key, $post->ID, false );
+					$v         = $this->get_desc( $v );
 					$timestamp = strtotime( $v );
-					$wp_date = date_i18n( get_option( 'date_format' ), $timestamp );
+					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
 				} else {
 					$v = get_field( $key, $post->ID, false );
@@ -154,8 +154,9 @@ class YMLCatalogGenerator {
 			}
 		}
 	}
-	public function addSeminarOffers($seminar_posts){
-				foreach ( $webinar_posts as $post ) {
+
+	public function addSeminarOffers( $seminar_posts ) {
+		foreach ( $seminar_posts as $post ) {
 			$offer = $this->offers->addChild( 'offer' );
 			$offer->addAttribute( 'id', $post->ID );
 			$offer->addChild( 'name', $post->post_title );
@@ -166,17 +167,17 @@ class YMLCatalogGenerator {
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
 			$params = [
-				'meetup_date'        => 'Дата проведения',
-				'time' => 'Время',
+				'meetup_date'     => 'Дата проведения',
+				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
-				'meetup_address' => 'Где будет проходить'
+				'meetup_address'  => 'Где будет проходить'
 			];
 			foreach ( $params as $key => $value ) {
 				if ( 'meetup_date' == $key ) {
-					$v = get_field( $key, $post->ID, false );
-					$v = $this->get_desc( $v );
+					$v         = get_field( $key, $post->ID, false );
+					$v         = $this->get_desc( $v );
 					$timestamp = strtotime( $v );
-					$wp_date = date_i18n( get_option( 'date_format' ), $timestamp );
+					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
 				} else {
 					$v = get_field( $key, $post->ID, false );
