@@ -102,12 +102,14 @@ class YMLCatalogGenerator {
 			$desc = get_field( 'meetup_more', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
-			$params = [
+			$params     = [
 				'meetup_date'     => 'Дата проведения',
 				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
 				'meetup_address'  => 'Где будет проходить'
 			];
+			$meetup_pic = get_field( 'meetup_pic', $post->ID, false );
+			$offer->addChild( 'picture', $this->get_image( $meetup_pic ) );
 			foreach ( $params as $key => $value ) {
 				if ( 'meetup_date' == $key ) {
 					$v         = get_field( $key, $post->ID, false );
@@ -161,17 +163,19 @@ class YMLCatalogGenerator {
 			$offer->addAttribute( 'id', $post->ID );
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
-			$category_id = $this->addLearningWays( $post->ID );
-			$offer->addChild( 'categoryId', $category_id );
+			$offer->addChild( 'categoryId', 0 );
 			$desc = get_field( 'meetup_more', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
-			$params = [
+			$params     = [
 				'meetup_date'     => 'Дата проведения',
+				'date_end'        => 'Дата окончания',
 				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
-				'meetup_address'  => 'Где будет проходить'
+				'meetup_address'  => 'Адрес мероприятия',
 			];
+			$meetup_pic = get_field( 'meetup_pic', $post->ID, false );
+			$offer->addChild( 'picture', $this->get_image( $meetup_pic ) );
 			foreach ( $params as $key => $value ) {
 				if ( 'meetup_date' == $key ) {
 					$v         = get_field( $key, $post->ID, false );
@@ -184,6 +188,15 @@ class YMLCatalogGenerator {
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
 			}
+		}
+	}
+
+	private function get_image( $image_id ) {
+		$image_url = wp_get_attachment_url( $image_id );
+		if ( $image_url ) {
+			return $image_url;
+		} else {
+			return null;
 		}
 	}
 
