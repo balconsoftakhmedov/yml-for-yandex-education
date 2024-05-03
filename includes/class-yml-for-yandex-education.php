@@ -11,17 +11,17 @@ class YML_For_Yandex_Education extends YMLCatalogGenerator {
 
 		$learning_posts = get_posts( array(
 			'post_type'      => 'learning',
-			'posts_per_page' => - 1,
+			'posts_per_page' =>  -1,
 			'post_status'    => 'publish'
 		) );
 		$seminar_posts = get_posts( array(
 			'post_type'      => 'seminars',
-			'posts_per_page' => - 1,
+			'posts_per_page' =>  -1,
 			'post_status'    => 'publish'
 		) );
 		$webinar_posts = get_posts( array(
 			'post_type'      => 'webinars',
-			'posts_per_page' => - 1,
+			'posts_per_page' =>  -1,
 			'post_status'    => 'publish'
 		) );
 		// Добавляем предложения
