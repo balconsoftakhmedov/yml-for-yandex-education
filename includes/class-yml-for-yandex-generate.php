@@ -45,7 +45,7 @@ class YMLCatalogGenerator {
 		$description = ! empty( $custom_description ) ? $custom_description : $site_description;
 		$picture     = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
 		// Add shop information to XML
-		$this->shop->addChild( 'name', $site_name );
+		$this->shop->addChild('name', htmlspecialchars($site_name, ENT_QUOTES, 'UTF-8'));
 		$this->shop->addChild( 'company', $site_company );
 		$this->shop->addChild( 'url', $site_url );
 		$this->shop->addChild( 'email', $admin_email );
