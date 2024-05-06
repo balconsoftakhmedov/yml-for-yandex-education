@@ -66,7 +66,7 @@ class YMLCatalogGenerator {
 
 		$terms = get_terms( array(
 			'taxonomy'   => $taxonomy,
-			'hide_empty' => false,
+			'hide_empty' => true,
 		) );
 		if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
 			return $terms;
