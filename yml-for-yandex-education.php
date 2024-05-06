@@ -33,6 +33,7 @@ function yml_for_yandex_education_schedule_event() {
 
 add_action( 'init', 'yml_for_yandex_education_schedule_event' );
 add_action( 'yml_for_yandex_education_daily_event', 'yml_for_yandex_education_init' );
+
 function yml_for_yandex_education_init() {
 	$plugin = new YML_For_Yandex_Education();
 	$plugin->run();

@@ -44,10 +44,10 @@ class YMLCatalogGenerator {
 		$site_name   = ! empty( $site_name ) ? $site_name : $site_name_def;
 		$description = ! empty( $custom_description ) ? $custom_description : $site_description;
 		$picture     = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
-		$site_name = 'АРИТ проф. образование';
-		$site_name = mb_substr($site_name, 0, 25);
+		$site_name   = 'АРИТ проф. образование';
+		$site_name   = mb_substr( $site_name, 0, 25 );
 		// Add shop information to XML
-		$this->shop->addChild('name', htmlspecialchars($site_name, ENT_QUOTES, 'UTF-8'));
+		$this->shop->addChild( 'name', htmlspecialchars( $site_name, ENT_QUOTES, 'UTF-8' ) );
 		$this->shop->addChild( 'company', $site_company );
 		$this->shop->addChild( 'url', $site_url );
 		$this->shop->addChild( 'email', $admin_email );
@@ -84,7 +84,7 @@ class YMLCatalogGenerator {
 				$post_name = $term->name;
 				$post_url  = get_term_link( $term );
 				$set       = $this->sets->addChild( 'set' );
-				$set->addAttribute( 'id', 's'.$post_id );
+				$set->addAttribute( 'id', 's' . $post_id );
 				$set->addChild( 'name', $post_name );
 				$set->addChild( 'url', $post_url );
 			}
@@ -100,7 +100,16 @@ class YMLCatalogGenerator {
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
 			$category_id = $this->addLearningWays( $post->ID );
+
+			$category_id = 1000;
+
 			$offer->addChild( 'categoryId', $category_id );
+			$offer->addChild( 'currencyId', 'RUR' );
+			$offer->addChild( 'price', 0 );
+			$course_time = ( get_field( 'hours', $post->ID, false ) ) ? get_field( 'hours', $post->ID, false ) : 6;
+			$this->generate_plan($offer, $course_time );
+
+
 			$desc = get_field( 'meetup_more', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
@@ -108,7 +117,8 @@ class YMLCatalogGenerator {
 				'meetup_date'     => 'Дата проведения',
 				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
-				'meetup_address'  => 'Где будет проходить'
+				'meetup_address'  => 'Где будет проходить',
+				'hours'        => 'Продолжительность',
 			];
 			$meetup_pic = get_field( 'meetup_pic', $post->ID, false );
 			$offer->addChild( 'picture', $this->get_image( $meetup_pic ) );
@@ -119,7 +129,10 @@ class YMLCatalogGenerator {
 					$timestamp = strtotime( $v );
 					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
-				} else {
+				} elseif ( 'hours' == $key ) {
+					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
+					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
+				}else {
 					$v = get_field( $key, $post->ID, false );
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
@@ -133,15 +146,21 @@ class YMLCatalogGenerator {
 			$offer->addAttribute( 'id', $post->ID );
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
-			$category_id = $this->addLearningWays( $post->ID );
+			$category_id = 1000;
+
 			$offer->addChild( 'categoryId', $category_id );
 			$setIds = $this->addLearningWays( $post->ID, 'learning_way', 'all' );
-			$offer->addChild( 'set-ids', 's'.$setIds );
+			$offer->addChild( 'set-ids', 's' . $setIds );
+			$offer->addChild( 'currencyId', 'RUR' );
+			$offer->addChild( 'price', 0 );
+			$course_time = ( get_field( 'hours', $post->ID, false ) ) ? get_field( 'hours', $post->ID, false ) : 9;
+			$this->generate_plan($offer, $course_time );
+
 			$desc = get_field( 'descr', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
 			$params = [
-				'hours'        => 'Время обучения',
+				'hours'        => 'Продолжительность',
 				'format'       => 'Форма обучения',
 				'documents'    => 'Получаемые документы',
 				'requirements' => 'Условия поступления',
@@ -149,13 +168,49 @@ class YMLCatalogGenerator {
 			];
 			foreach ( $params as $key => $value ) {
 				if ( 'hours' == $key ) {
-					$v = get_field( $key, $post->ID, false );
+					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 9;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
 					$v = get_field( $key, $post->ID, false );
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
 			}
+
+		}
+	}
+
+	public function generate_plan($offer, $time) {
+		$time1 = ($time)?(int) $time/3: 10;
+		$parameters = [
+			[
+				'name'  => 'План',
+				'order' => '1',
+				'unit'  => 'Вводный модуль',
+				'hours' => $time1,
+				'value' => 'Вводной'
+			],
+			[
+				'name'  => 'План',
+				'order' => '2',
+				'unit'  => 'Модуль 1',
+				'hours' => $time1,
+				'value' => 'Основная часть'
+			],
+			[
+				'name'  => 'План',
+				'order' => '3',
+				'unit'  => 'Модуль 2',
+				'hours' => $time1,
+				'value' => 'Основная 2 часть'
+			]
+		];
+// Add each parameter as a child element of <params>
+		foreach ( $parameters as $param ) {
+			$parent = $offer->addChild( 'param', $param['value'] );
+			$parent->addAttribute( 'name', $param['name'] );
+			$parent->addAttribute( 'order', $param['order'] );
+			$parent->addAttribute( 'unit', $param['unit'] );
+			$parent->addAttribute( 'hours', $param['hours'] );
 		}
 	}
 
@@ -166,6 +221,16 @@ class YMLCatalogGenerator {
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
 			$offer->addChild( 'categoryId', 0 );
+
+			$category_id = 1000;
+
+			$offer->addChild( 'categoryId', $category_id );
+			$offer->addChild( 'currencyId', 'RUR' );
+			$offer->addChild( 'price', 0 );
+			$course_time = ( get_field( 'hours', $post->ID, false ) ) ? get_field( 'hours', $post->ID, false ) : 6;
+			$this->generate_plan($offer, $course_time );
+
+
 			$desc = get_field( 'meetup_more', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
@@ -175,6 +240,7 @@ class YMLCatalogGenerator {
 				'time'            => 'Время',
 				'meetup_speakers' => 'Спикеры',
 				'meetup_address'  => 'Адрес мероприятия',
+				'hours'           => 'Продолжительность',
 			];
 			$meetup_pic = get_field( 'meetup_pic', $post->ID, false );
 			$offer->addChild( 'picture', $this->get_image( $meetup_pic ) );
@@ -185,6 +251,9 @@ class YMLCatalogGenerator {
 					$timestamp = strtotime( $v );
 					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
+				} elseif ( 'hours' == $key ) {
+					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
+					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
 					$v = get_field( $key, $post->ID, false );
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
