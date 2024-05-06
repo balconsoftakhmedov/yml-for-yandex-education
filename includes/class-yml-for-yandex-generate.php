@@ -44,6 +44,8 @@ class YMLCatalogGenerator {
 		$site_name   = ! empty( $site_name ) ? $site_name : $site_name_def;
 		$description = ! empty( $custom_description ) ? $custom_description : $site_description;
 		$picture     = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
+		$site_name = 'АРИТ проф. образование';
+		$site_name = mb_substr($site_name, 0, 25);
 		// Add shop information to XML
 		$this->shop->addChild('name', htmlspecialchars($site_name, ENT_QUOTES, 'UTF-8'));
 		$this->shop->addChild( 'company', $site_company );
@@ -82,7 +84,7 @@ class YMLCatalogGenerator {
 				$post_name = $term->name;
 				$post_url  = get_term_link( $term );
 				$set       = $this->sets->addChild( 'set' );
-				$set->addAttribute( 'id', $post_id );
+				$set->addAttribute( 'id', 's'.$post_id );
 				$set->addChild( 'name', $post_name );
 				$set->addChild( 'url', $post_url );
 			}
@@ -134,7 +136,7 @@ class YMLCatalogGenerator {
 			$category_id = $this->addLearningWays( $post->ID );
 			$offer->addChild( 'categoryId', $category_id );
 			$setIds = $this->addLearningWays( $post->ID, 'learning_way', 'all' );
-			$offer->addChild( 'set-ids', $setIds );
+			$offer->addChild( 'set-ids', 's'.$setIds );
 			$desc = get_field( 'descr', $post->ID, false );
 			$desc = $this->get_desc( $desc );
 			$offer->addChild( 'description', $desc );
