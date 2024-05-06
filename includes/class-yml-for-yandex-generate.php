@@ -133,7 +133,8 @@ class YMLCatalogGenerator {
 					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				}else {
-					$v = get_field( $key, $post->ID, false );
+					$k = get_field( $key, $post->ID, false );
+					$v = ($k)? $k: 'Нету данных';
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
 			}
@@ -171,7 +172,9 @@ class YMLCatalogGenerator {
 					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 9;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
-					$v = get_field( $key, $post->ID, false );
+
+					$k = get_field( $key, $post->ID, false );
+					$v = ($k)? $k: 'Нету данных';
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
 			}
@@ -255,7 +258,9 @@ class YMLCatalogGenerator {
 					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
-					$v = get_field( $key, $post->ID, false );
+
+					$k = get_field( $key, $post->ID, false );
+					$v = ($k)? $k: 'Нету данных';
 					$this->addParam( $offer, $value, $this->get_desc( $v ) );
 				}
 			}
