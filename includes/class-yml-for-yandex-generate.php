@@ -160,7 +160,9 @@ class YMLCatalogGenerator {
 			$offer->addChild( 'categoryId', $category_id );
 			$setIds = $this->addLearningWays( $post->ID, 'learning_way', 'all' );
 
-			if (!empty($setIds)) $offer->addChild( 'set-ids', 's' . $setIds );
+			if (!empty($setIds)) {
+				$offer->addChild( 'set-ids', $setIds );
+			}
 			$offer->addChild( 'currencyId', 'RUR' );
 			$offer->addChild( 'price', 0 );
 			$course_time = ( get_field( 'hours', $post->ID, false ) ) ? get_field( 'hours', $post->ID, false ) : 9;
@@ -298,15 +300,12 @@ class YMLCatalogGenerator {
 		$terms_all = [];
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
-				if ( $key == 0 ) {
-					return $term->term_id;
-				} else {
-					$terms_all[] = $term->term_id;
-				}
+				$terms_all[] = 's'.$term->term_id;
 			}
-
-			return implode( ',', $terms_all );
 		}
+
+		return implode( ',', $terms_all );
+
 	}
 
 	private function get_post_category_id( $post_id ) {
