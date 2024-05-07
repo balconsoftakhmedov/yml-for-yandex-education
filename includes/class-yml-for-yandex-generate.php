@@ -329,9 +329,16 @@ class YMLCatalogGenerator {
 	public function saveXMLFile( $filename ) {
 		$filepath = ABSPATH . $filename;
 		if ( $this->xml instanceof SimpleXMLElement ) {
-			$this->xml->asXML( $filename );
+
+			$dom                     = new DOMDocument( '1.0', 'UTF-8' );
+			$dom->preserveWhiteSpace = false;
+			$dom->formatOutput       = true;
+			$dom->loadXML( $this->xml->asXML() );
+
+			$dom->save( $filepath );
 		} else {
 			throw new Exception( 'XML object is not initialized' );
 		}
 	}
+
 }
