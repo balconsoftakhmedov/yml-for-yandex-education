@@ -62,22 +62,30 @@ class YMLCatalogGenerator {
 		$currency->addAttribute( 'rate', '1' );
 	}
 
-	public function getAllTerms( $taxonomy ) {
+	public function getAllTerms( $taxonomy, $post_type ) {
 
-		$terms = get_terms( array(
-			'taxonomy'   => $taxonomy,
-			'hide_empty' => true,
-		) );
-		if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
-			return $terms;
-		}
+		$posts = get_posts(array(
+            'post_type'      => $post_type,
+            'posts_per_page' => -1,
+            'post_status'    => 'publish'
+        ));
 
-		return [];
+        $term_ids = [];
+        foreach ($posts as $post) {
+            $terms = get_the_terms($post->ID, $taxonomy);
+            if (!empty($terms) && !is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    $term_ids[$term->term_id] = $term;
+                }
+            }
+        }
+
+		return array_values($term_ids);;
 	}
 
 	private function setupSets( $taxonomy ) {
 
-		$taxonomies = $this->getAllTerms( $taxonomy );
+		$taxonomies = $this->getAllTerms( $taxonomy, 'learning' );
 		if ( $taxonomies ) {
 			foreach ( $taxonomies as $term ) {
 				$post_id   = $term->term_id;
@@ -99,7 +107,7 @@ class YMLCatalogGenerator {
 			$offer->addAttribute( 'id', $post->ID );
 			$offer->addChild( 'name', $post->post_title );
 			$offer->addChild( 'url', get_permalink( $post->ID ) );
-			$category_id = $this->addLearningWays( $post->ID );
+
 
 			$category_id = 1000;
 
@@ -151,7 +159,8 @@ class YMLCatalogGenerator {
 
 			$offer->addChild( 'categoryId', $category_id );
 			$setIds = $this->addLearningWays( $post->ID, 'learning_way', 'all' );
-			$offer->addChild( 'set-ids', 's' . $setIds );
+
+			if (!empty($setIds)) $offer->addChild( 'set-ids', 's' . $setIds );
 			$offer->addChild( 'currencyId', 'RUR' );
 			$offer->addChild( 'price', 0 );
 			$course_time = ( get_field( 'hours', $post->ID, false ) ) ? get_field( 'hours', $post->ID, false ) : 9;
