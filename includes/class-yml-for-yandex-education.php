@@ -29,9 +29,9 @@ class YML_For_Yandex_Education extends YMLCatalogGenerator {
 		$this->addSeminarOffers( $seminar_posts );
 		$this->addWebinarOffers( $webinar_posts );
 		// Сохраняем XML-файл
-		$this->saveXMLFile( 'feed.xml' );
-		$this->saveXMLFile( 'feed.yml' );
-		$this->saveXMLFile( 'feednew.xml' );
-		$this->saveXMLFile( 'feednew.yml' );
+		//$this->saveXMLFile( 'feed.xml' );
+		//$this->saveXMLFile( 'feed.yml' );
+		$this->saveXMLFile( 'feeds.xml' );
+		$this->saveXMLFile( 'feeds.yml' );
 	}
 }

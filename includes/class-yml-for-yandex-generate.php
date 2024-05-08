@@ -31,7 +31,7 @@ class YMLCatalogGenerator {
 		$admin_email        = get_option( 'admin_email' );
 		$site_url           = get_site_url();
 		$site_company       = 'АНО ДПО «Академия развития инновационных технологий»';
-		$default_picture    = $site_url . '/wp-content/plugins/yml-for-yandex-education/images/screenshot.png';
+		$default_picture    = $site_url . '/wp-content/themes/arit/img/logo/logo-100.png';
 		$site_description   = get_bloginfo( 'description' );
 		$custom_description = '';
 		$wpseo_settings     = get_option( 'wpseo_titles' );
@@ -43,7 +43,7 @@ class YMLCatalogGenerator {
 		}
 		$site_name   = ! empty( $site_name ) ? $site_name : $site_name_def;
 		$description = ! empty( $custom_description ) ? $custom_description : $site_description;
-		$picture     = ! empty( $custom_picture ) ? $custom_picture : $default_picture;
+		$picture     =  $default_picture;
 		$site_name   = 'АРИТ проф. образование';
 		$site_name   = mb_substr( $site_name, 0, 25 );
 		// Add shop information to XML
@@ -138,7 +138,7 @@ class YMLCatalogGenerator {
 					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
 				} elseif ( 'hours' == $key ) {
-					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
+					$v = ( get_field( $key, $post->ID, false ) ) ? (int) get_field( $key, $post->ID, false ) : 6;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				}else {
 					$k = get_field( $key, $post->ID, false );
@@ -180,7 +180,7 @@ class YMLCatalogGenerator {
 			];
 			foreach ( $params as $key => $value ) {
 				if ( 'hours' == $key ) {
-					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 9;
+					$v = ( get_field( $key, $post->ID, false ) ) ? (int) get_field( $key, $post->ID, false ) : 9;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
 
@@ -266,7 +266,7 @@ class YMLCatalogGenerator {
 					$wp_date   = date_i18n( get_option( 'date_format' ), $timestamp );
 					$this->addParam( $offer, $value, $this->get_desc( $wp_date ) );
 				} elseif ( 'hours' == $key ) {
-					$v = ( get_field( $key, $post->ID, false ) ) ? get_field( $key, $post->ID, false ) : 6;
+					$v = ( get_field( $key, $post->ID, false ) ) ? (int) get_field( $key, $post->ID, false ) : 6;
 					$this->addParam( $offer, $value, $this->get_desc( $v ), 'час' );
 				} else {
 
@@ -322,7 +322,7 @@ class YMLCatalogGenerator {
 		$desc_stripped = strip_tags( $desc );
 		$desc_stripped = str_replace( '&nbsp;', '', $desc_stripped );
 		$desc_stripped = wp_trim_words( $desc_stripped, 40, '...' );
-
+		$desc_stripped = (!empty($desc_stripped))?$desc_stripped:'Описание';
 		return $desc_stripped;
 	}
 
