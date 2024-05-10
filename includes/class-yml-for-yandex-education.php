@@ -33,5 +33,7 @@ class YML_For_Yandex_Education extends YMLCatalogGenerator {
 		//$this->saveXMLFile( 'feed.yml' );
 		$this->saveXMLFile( 'feeds.xml' );
 		$this->saveXMLFile( 'feeds.yml' );
+		$this->saveXMLFile( 'feedme.xml' );
+		$this->saveXMLFile( 'feedme.yml' );
 	}
 }
